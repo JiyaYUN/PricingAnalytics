@@ -5,7 +5,7 @@
 #Load packages
 library("lfe")
 library("data.table")
-
+ajkcn
 
 #Set working space
 rm(list = ls());
