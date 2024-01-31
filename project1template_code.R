@@ -22,7 +22,11 @@ cardata=fread("cars.csv",stringsAsFactors = F)
 
 #  Standard syntax for the felm function is as follows.
 #  felm(log(Q) ~ log(P) + X | factor(name of the categorical variables for fixed effects), data source)  
-
+summary(felm(log(qu) ~ log(eurpr)+cy+hp+wi+he+li+ac+
+             avexr+avdcpr+avdppr+pop+ngdp+rgdp+
+             ergdp+engdpc+avgwerival| factor(ma):factor(co)+
+             factor(type):factor(model)+factor(loc)+
+             factor(frm), data=cardata)) #1/30 model 变量试过不行的highlight
 
 #With no fixed effects, the syntax is identical to the default "lm" function.
 #Your colleague's regression
