@@ -1,19 +1,39 @@
-#If not installed yet
-#install.packages("lfe")
-#install.packages("data.table")
-
-#Load packages
 library("lfe")
 library("data.table")
 
 #Set working space
 rm(list = ls());
-setwd("YOUR FOLDER NAME")
-#setwd("L:/Takeaki/Google drive/Past classes/Rochester Simon/2024 Spring A pricing analytics/Project 1")
-
-#Load data
+setwd("D:/Simon.UR/Spring A/MKT440 Pricing Analytics")
 cardata=fread("cars.csv",stringsAsFactors = F)
+irondata = fread("iron_ore.csv", stringsAsFactors = F)
+summary(cardata)
+cardata = na.omit(cardata)
 
+# Interpreting a log-log regression
+summary(felm(formula = log(qu)~log(eurpr), data = cardata))
+reg=felm(log(qu)~log(eurpr), data=cardata)
+summary(reg)
+bestmodel <- felm(log(qu) ~ log(eurpr)+cy+hp+wi+he+li+ac+avexr+avdcpr+
+                  pop+avgwerival| 
+                  factor(ma):factor(co)+factor(type):factor(model)+
+                  factor(loc)+factor(frm), data=cardata)
+
+bestmodel <- felm(log(qu) ~ log(eurpr)+hp+li+ac+avexr+avdcpr+
+                      avdppr+pop+ngdp+rgdp+ergdp+engdpc+avgwerival| 
+                      factor(type):factor(model)+
+                      factor(loc), data=cardata)
+summary(bestmodel)
+fe <- getfe(bestmodel)
+feHondalengendLegend <- match('honda legend.legend',fe$idx)
+
+coefbeta1=bestmodel$coefficients
+pricespace=seq(0,50000,100)
+fitted=(exp(feHondalengendLegend+feHondalengendLegend[1]*log(pricespace)+feHondalengendLegend[2]*mean(cardata$hp)))
+plot(cardata$eurpr,cardata$qu, pch=1, main="Price vs Sales",
+     xlab="Price", ylab="Sales", cex=2,cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
+lines(pricespace,fitted,col="blue",lwd=2)
+
+############################################################################################################## Gia
 
 
 #----------------------------------------------------------
@@ -22,11 +42,6 @@ cardata=fread("cars.csv",stringsAsFactors = F)
 
 #  Standard syntax for the felm function is as follows.
 #  felm(log(Q) ~ log(P) + X | factor(name of the categorical variables for fixed effects), data source)  
-summary(felm(log(qu) ~ log(eurpr)+cy+hp+wi+he+li+ac+
-             avexr+avdcpr+avdppr+pop+ngdp+rgdp+
-             ergdp+engdpc+avgwerival| factor(ma):factor(co)+
-             factor(type):factor(model)+factor(loc)+
-             factor(frm), data=cardata)) #1/30 model 变量试过不行的highlight
 
 #With no fixed effects, the syntax is identical to the default "lm" function.
 #Your colleague's regression
