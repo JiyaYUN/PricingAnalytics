@@ -1,9 +1,18 @@
-library("lfe")
-library("data.table")
+# Install the 'lfe' package
+install.packages("lfe")
+# Install the 'data.table' package
+install.packages("data.table")
+# Load the packages into the R session
+library(lfe)
+library(data.table)
+
 
 #Set working space
 rm(list = ls());
+#gia's directory
 setwd("D:/Simon.UR/Spring A/MKT440 Pricing Analytics")
+#mengxi's directory
+setwd("/Users/limengxi/Desktop/2024springA/pricing analytics/WK3/ae1")
 cardata=fread("cars.csv",stringsAsFactors = F)
 irondata = fread("iron_ore.csv", stringsAsFactors = F)
 summary(cardata)
@@ -12,6 +21,8 @@ cardata = na.omit(cardata)
 cardata$ye = paste0('19', cardata$ye)
 cardata$ye = as.integer(cardata$ye)
 mergedata = merge(cardata, irondata, by.x = 'ye', by.y='year')
+
+# ------------
 
 # Interpreting a log-log regression
 summary(felm(formula = log(qu)~log(eurpr), data = cardata))
@@ -39,7 +50,79 @@ lines(pricespace,fitted,col="blue",lwd=2)
 
 ############################################################################################################## Gia
 
+#trying IVs with two-stage least squares (2SLS) regression, seeing if two are correlated
+#1st stage:
+#find predicted values of the problematic variable (like price) using an instrument.
+#2nd stage:
+#to understand the impact of "log(eurpr)" on "log(qu)" after controlling for endogeneity via the IV
 
+
+#1. trying out unit_value_98, result is good
+summary(first_stage_unit_value_98 <- lm(log(eurpr) ~ unit_value_98, data=mergedata))
+second_stage_unit_value_98=felm(log(qu)~1 | 0 | (log(eurpr)~unit_value_98), data=mergedata)
+summary(second_stage_unit_value_98)
+#good news! it's significant for both test with high F-statistics, unit_value_98 appears to be a 
+#significant IV. However, there's a negative correlation between unit_value_98 and log(eurpr)
+#There might be a specific dynamic in your dataset where higher input costs are associated
+#with lower final prices. 
+#or if important variables that influence both "Unit_Value_98" and "log(eurpr)" are 
+#omitted from the model
+
+
+#2. trying out tax, result is ? 我问一下老师
+first_stage_tax <- lm(log(eurpr) ~ tax, data=mergedata)
+summary(first_stage_tax)
+second_stage_tax=felm(log(qu)~1 | 0 | (log(eurpr)~tax), data=mergedata)
+summary(second_stage_tax)
+#both significant but there's a positive direction between price and quantity in the second, 
+#might be if "tax" has indirect effects on quantity that are not channeled through price, 
+#this could distort the estimated relationship between price and quantity.
+
+
+#3. trying out weight
+first_stage_weight <- lm(log(eurpr) ~ we, data=mergedata)
+summary(first_stage_weight)
+second_stage_weight=felm(log(qu)~1 | 0 | (log(eurpr)~we), data=mergedata)
+summary(second_stage_weight)
+#good news! it's significant for both test with high F-statistics, first_stage_weight
+#appears to be a significant IV.
+#the weight of the car is related to its production cost and therefore its final 
+#price, but does not directly affect the quantity demanded, except through the price.
+
+
+#4. trying out length and height, expecting the same dynamic as weight
+first_stage_length <- lm(log(eurpr) ~ le, data=mergedata)
+summary(first_stage_length)
+second_stage_length=felm(log(qu)~1 | 0 | (log(eurpr)~le), data=mergedata)
+summary(second_stage_length)
+
+first_stage_height <- lm(log(eurpr) ~ he, data=mergedata)
+summary(first_stage_height)
+second_stage_height=felm(log(qu)~1 | 0 | (log(eurpr)~he), data=mergedata)
+summary(second_stage_height)
+#similar conclusion for three dimention measure
+
+#4. trying out cylinder volume
+first_stage_cylinder <- lm(log(eurpr) ~ cy, data=mergedata)
+summary(first_stage_cylinder)
+second_stage_cylinder=felm(log(qu)~1 | 0 | (log(eurpr)~cy), data=mergedata)
+summary(second_stage_cylinder)
+#significant! 
+#cars with larger cylinder volumes are generally more expensive, but the cylinder volume itself 
+#does not directly influence how many cars are sold (the dependent variable), except through its 
+#effect on the price.
+#cylinder volume does not directly affect the demand for cars. This might be plausible if consumers 
+#primarily consider factors like price, brand, or fuel efficiency, rather than cylinder volume, 
+#when deciding to purchase a car.
+
+#现在比较符合的有：unit_value_98，le, he, we, cy
+#tax大概率不是，我需要问一下老师
+
+
+
+
+
+############################################################################################################## Mengxi
 #----------------------------------------------------------
 #----------------------------------------------------------
 #SECTION 1: Run regressions with control variables (X) and fixed effects using "felm" function
