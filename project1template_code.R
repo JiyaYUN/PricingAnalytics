@@ -9,6 +9,10 @@ irondata = fread("iron_ore.csv", stringsAsFactors = F)
 summary(cardata)
 cardata = na.omit(cardata)
 
+cardata$ye = paste0('19', cardata$ye)
+cardata$ye = as.integer(cardata$ye)
+mergedata = merge(cardata, irondata, by.x = 'ye', by.y='year')
+
 # Interpreting a log-log regression
 summary(felm(formula = log(qu)~log(eurpr), data = cardata))
 reg=felm(log(qu)~log(eurpr), data=cardata)
