@@ -251,5 +251,21 @@ summary(reg6)
 reg7=felm(log(qu)~li | 0 | (log(eurpr)| log(avgurprrival) ~ we + do) ,data=cardata)
 summary(reg7)
 
+############################################################################################################## Vic
+#----------------------------------------------------------
+#----------------------------------------------------------
+#Q7
 
+regrival <- felm(log(qu) ~ log(avgurprrival) | factor(ye), data=cardata)
+summary (regrival)
+
+#1. The coefficient of log(avgeurprrival) represents the cross-price elasticity of demand.
+#This coefficient measures the percentage change in the quantity of cars sold in response to each 1% change in average rival price.
+
+#2. In the common business setting, this coefficient should be positive. Since the rival cars are substitutes for the target car,
+#the increase in rival cars' prices will shift the demand towards more purchases of the target car.
+#The estimated coefficient is positive, which resonates with our expectations.
+
+#3. The estimated coefficient suggests a 1% change in average rival car price leads to a 3.4% change in the quantity sold of the target car,
+#this represents a strong market elasticity, as the target car is considered a compelling substitute.
 
