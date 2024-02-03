@@ -22,10 +22,9 @@ bestmodel <- felm(log(qu) ~ log(eurpr)+cy+hp+wi+he+li+ac+avexr+avdcpr+
                        factor(loc)+factor(frm), data=cardata)
 
 
-bestmodel <- felm(log(qu) ~ log(eurpr)+li+ac+avdppr+ergdp|
-                       factor(type):factor(model)+factor(loc)+factor(ye),
-                  data=cardata) # use this model
+bestmodel <- felm(log(qu) ~ log(eurpr)+avexr+pop+ac|factor(ye)+factor(loc)+factor(brand),data=cardata) #use this model
 summary(bestmodel)
+
 summary(bestmodel)
 fe <- getfe(bestmodel)
 feHondalengendLegend <- match('honda legend.legend',fe$idx)
