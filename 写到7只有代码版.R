@@ -34,46 +34,52 @@ ivmodel <- felm(log(qu) ~ avexr+pop+ac|
 summary(ivmodel)
 
 #(1) unit_value_98
+#1st stage
 summary(first_stage_unit_value_98 <- lm(log(eurpr) ~ unit_value_98, data=mergedata))
+#2nd stage
 second_stage_unit_value_98=felm(log(qu)~1 | 0 | (log(eurpr)~unit_value_98), data=mergedata)
 summary(second_stage_unit_value_98)
+
 #(2) weight
+#1st stage
 first_stage_weight <- lm(log(eurpr) ~ we, data=mergedata)
 summary(first_stage_weight)
-second_stage_weight=felm(log(qu)~1 | 0 | (log(eurpr)~we), data=mergedata)
+#2nd stage
+second_stage_weight=felm(log(qu)~avexr+pop+ac | factor(ye)+factor(loc)+factor(brand) | (log(eurpr)~we), data=mergedata)
 summary(second_stage_weight)
-#(3) length，width, and height
+
+#(3) length
+#1st stage
 first_stage_length <- lm(log(eurpr) ~ le, data=mergedata)
 summary(first_stage_length)
-second_stage_length=felm(log(qu)~1 | 0 | (log(eurpr)~le), data=mergedata)
+#2nd stage
+second_stage_length=felm(log(qu)~avexr+pop+ac | factor(ye)+factor(loc)+factor(brand) | (log(eurpr)~le), data=mergedata)
 summary(second_stage_length)
 
+#(4) width
+#1st stage
 first_stage_width <- lm(log(eurpr) ~ wi, data=mergedata)
 summary(first_stage_width)
-second_stage_width=felm(log(qu)~1 | 0 | (log(eurpr)~wi), data=mergedata)
+#2nd stage
+second_stage_width=felm(log(qu)~avexr+pop+ac | factor(ye)+factor(loc)+factor(brand) | (log(eurpr)~wi), data=mergedata)
 summary(second_stage_width)
 
+#(5) height
+#1st stage
 first_stage_height <- lm(log(eurpr) ~ he, data=mergedata)
 summary(first_stage_height)
-second_stage_height=felm(log(qu)~1 | 0 | (log(eurpr)~he), data=mergedata)
+#2nd stage
+second_stage_height=felm(log(qu)~avexr+pop+ac | factor(ye)+factor(loc)+factor(brand) | (log(eurpr)~he), data=mergedata)
 summary(second_stage_height)
-# (4) trying out cylinder volume
+
+#(6) cy
+#1st stage
 first_stage_cylinder <- lm(log(eurpr) ~ cy, data=mergedata)
 summary(first_stage_cylinder)
-second_stage_cylinder=felm(log(qu)~1 | 0 | (log(eurpr)~cy), data=mergedata)
+#2nd stage
+second_stage_cylinder=felm(log(qu)~avexr+pop+ac | factor(ye)+factor(loc)+factor(brand)  | (log(eurpr)~cy), data=mergedata)
 summary(second_stage_cylinder)
-#(5) trying out four price index
-#avg consumer price index of destination country
-first_stage_consumer_index_des <- lm(log(eurpr) ~ avdcpr, data=mergedata)
-summary(first_stage_consumer_index_des)#positively correlated with price
-second_stage_consumer_index_des=felm(log(qu)~1 | 0 | (log(eurpr)~avdcpr), data=mergedata)
-summary(second_stage_consumer_index_des)#price-quantity relationship is negative
 
-#avg producer price index of destination country
-first_stage_producer_index_des <- lm(log(eurpr) ~ avdppr, data=mergedata)
-summary(first_stage_producer_index_des)#positively correlated with price
-second_stage_producer_index_des=felm(log(qu)~1 | 0 | (log(eurpr)~avdppr), data=mergedata)
-summary(second_stage_producer_index_des)#price-quantity relationship is negative
 
 #7. Cross-elasticities and competitive effects
 #finalmodel including the prices of rival cars
