@@ -94,7 +94,7 @@ summary (regrival)
 
 finalmodel <- felm(log(qu) ~ avexr+pop+ac+log(avgurprrival)|
                        factor(ye)+factor(loc)+factor(brand)|
-                       (log(eurpr)~unit_value_98+we+le+wi+he)
+                       (log(eurpr)~unit_value_98+we+le+wi+he+cy)
                    , data=mergedata)
 summary(finalmodel)
 
