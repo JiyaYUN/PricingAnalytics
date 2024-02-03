@@ -1,40 +1,28 @@
+#loading packages
 library(lfe)
 library(data.table)
 #Set working space
 rm(list = ls());
 setwd("D:/Simon.UR/Spring A/MKT440 Pricing Analytics")
+#loading data
 cardata=fread("cars.csv",stringsAsFactors = F)
 irondata = fread("iron_ore.csv", stringsAsFactors = F)
 summary(cardata)
+#cleaning NA
 cardata = na.omit(cardata)
-
+#combining 2 data.table
 cardata$ye = paste0('19', cardata$ye)
 cardata$ye = as.integer(cardata$ye)
 mergedata = merge(cardata, irondata, by.x = 'ye', by.y='year')
-# 5 Control Variables and Fixed Effects
-# Interpreting a log-log regression
-summary(felm(formula = log(qu)~log(eurpr), data = cardata))
+
+#4 Interpreting a log-log regression
 reg=felm(log(qu)~log(eurpr), data=cardata)
 summary(reg)
-bestmodel <- felm(log(qu) ~ log(eurpr)+cy+hp+wi+he+li+ac+avexr+avdcpr+
-                       pop+avgwerival| 
-                       factor(ma):factor(co)+factor(type):factor(model)+
-                       factor(loc)+factor(frm), data=cardata)
 
-
-bestmodel <- felm(log(qu) ~ log(eurpr)+avexr+pop+ac|factor(ye)+factor(loc)+factor(brand),data=cardata) #use this model
+#5 Control Variables and Fixed Effects
+#adding avexr, pop and ac as control variables, year, location and brand as fixed effects
+bestmodel <- felm(log(qu) ~ log(eurpr)+avexr+pop+ac|factor(ye)+factor(loc)+factor(brand),data=cardata)
 summary(bestmodel)
-
-summary(bestmodel)
-fe <- getfe(bestmodel)
-feHondalengendLegend <- match('honda legend.legend',fe$idx)
-
-coefbeta1=bestmodel$coefficients
-pricespace=seq(0,50000,100)
-fitted=(exp(feHondalengendLegend+feHondalengendLegend[1]*log(pricespace)+feHondalengendLegend[2]*mean(cardata$hp)))
-plot(cardata$eurpr,cardata$qu, pch=1, main="Price vs Sales",
-     xlab="Price", ylab="Sales", cex=2,cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
-lines(pricespace,fitted,col="blue",lwd=2)
 
 
 # 6 Instrumental Variables
