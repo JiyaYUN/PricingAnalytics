@@ -39,11 +39,11 @@ lines(pricespace,fitted,col="blue",lwd=2)
 
 # 6 Instrumental Variables
 
-finalmodel <- felm(log(qu) ~ li+ac+avdcpr+avdppr+ergdp|
-                       factor(type):factor(model)+factor(loc)+factor(ye)|
+ivmodel <- felm(log(qu) ~ avexr+pop+ac|
+                       factor(ye)+factor(loc)+factor(brand)|
                        (log(eurpr)~unit_value_98+we+le+wi+he+cy)
                    , data=mergedata)
-summary(finalmodel)
+summary(ivmodel)
 
 #(1) unit_value_98
 summary(first_stage_unit_value_98 <- lm(log(eurpr) ~ unit_value_98, data=mergedata))
@@ -90,6 +90,13 @@ summary(second_stage_producer_index_des)#price-quantity relationship is negative
 #7. Cross-elasticities and competitive effects
 regrival <- felm(log(qu) ~ log(avgurprrival) | factor(ye), data=cardata)
 summary (regrival)
+
+
+finalmodel <- felm(log(qu) ~ avexr+pop+ac+log(avgurprrival)|
+                       factor(ye)+factor(loc)+factor(brand)|
+                       (log(eurpr)~unit_value_98+we+le+wi+he)
+                   , data=mergedata)
+summary(finalmodel)
 
 #1. The coefficient of log(avgeurprrival) represents the cross-price elasticity of demand.
 #This coefficient measures the percentage change in the quantity of cars sold in response to each 1% change in average rival price.
