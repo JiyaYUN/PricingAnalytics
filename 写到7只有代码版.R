@@ -84,13 +84,13 @@ finalmodel <- felm(log(qu) ~ avexr+pop+ac+log(avgurprrival)|
 summary(finalmodel)
 
 #8.Recovering Costs
-#8.1.use β1 = −0.2925 (your colleague’s estimate) to recover the costs
+#(1)use β1 = −0.2925 (your colleague’s estimate) to recover the costs
 beta1 <- -0.2925 
 mergedata$rivalcost = mergedata$eurpr*(1+beta1)/beta1
 summary(mergedata)
 mergedata$rivalcost
 
-#8.2.use β1 I obtained in the previous section to recover the costs which is -1.990
+#(2)use β1 I obtained in the previous section to recover the costs which is -1.990
 finalbeta1 <- -1.990
 mergedata$finalrivalcost = mergedata$eurpr*(1+finalbeta1)/finalbeta1
 summary(mergedata)
