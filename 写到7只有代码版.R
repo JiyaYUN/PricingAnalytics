@@ -76,22 +76,24 @@ second_stage_producer_index_des=felm(log(qu)~1 | 0 | (log(eurpr)~avdppr), data=m
 summary(second_stage_producer_index_des)#price-quantity relationship is negative
 
 #7. Cross-elasticities and competitive effects
-regrival <- felm(log(qu) ~ log(avgurprrival) | factor(ye), data=cardata)
-summary (regrival)
-
-
+#finalmodel including the prices of rival cars
 finalmodel <- felm(log(qu) ~ avexr+pop+ac+log(avgurprrival)|
                        factor(ye)+factor(loc)+factor(brand)|
                        (log(eurpr)~unit_value_98+we+le+wi+he+cy)
                    , data=mergedata)
 summary(finalmodel)
 
-#1. The coefficient of log(avgeurprrival) represents the cross-price elasticity of demand.
-#This coefficient measures the percentage change in the quantity of cars sold in response to each 1% change in average rival price.
+#8.Recovering Costs
+#8.1.use β1 = −0.2925 (your colleague’s estimate) to recover the costs
+beta1 <- -0.2925 
+mergedata$rivalcost = mergedata$eurpr*(1+beta1)/beta1
+summary(mergedata)
+mergedata$rivalcost
 
-#2. In the common business setting, this coefficient should be positive. Since the rival cars are substitutes for the target car,
-#the increase in rival cars' prices will shift the demand towards more purchases of the target car.
-#The estimated coefficient is positive, which resonates with our expectations.
+#8.2.use β1 I obtained in the previous section to recover the costs which is -1.990
+finalbeta1 <- -1.990
+mergedata$finalrivalcost = mergedata$eurpr*(1+finalbeta1)/finalbeta1
+summary(mergedata)
+mergedata$finalrivalcost
 
-#3. The estimated coefficient suggests a 1% change in average rival car price leads to a 1.8% change in the quantity sold of the target car,
-#this represents a strong market elasticity, as the target car is considered a compelling substitute.
+
