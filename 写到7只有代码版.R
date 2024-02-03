@@ -37,7 +37,7 @@ lines(pricespace,fitted,col="blue",lwd=2)
 
 # 6 Instrumental Variables
 
-finalmodel <- felm(log(qu) ~ log(eurpr)+li+ac+avdcpr+avdppr+ergdp|
+finalmodel <- felm(log(qu) ~ li+ac+avdcpr+avdppr+ergdp|
                        factor(type):factor(model)+factor(loc)+factor(ye)|
                        (log(eurpr)~unit_value_98+we+le+wi+he+cy)
                    , data=mergedata)
