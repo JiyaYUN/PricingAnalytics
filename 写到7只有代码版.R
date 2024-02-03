@@ -105,5 +105,5 @@ summary(finalmodel)
 #the increase in rival cars' prices will shift the demand towards more purchases of the target car.
 #The estimated coefficient is positive, which resonates with our expectations.
 
-#3. The estimated coefficient suggests a 1% change in average rival car price leads to a 3.4% change in the quantity sold of the target car,
+#3. The estimated coefficient suggests a 1% change in average rival car price leads to a 1.685% change in the quantity sold of the target car,
 #this represents a strong market elasticity, as the target car is considered a compelling substitute.
