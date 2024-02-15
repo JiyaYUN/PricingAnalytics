@@ -7,6 +7,26 @@ kiwi <- read.csv("kiwi_bubbles_P2.csv")
 
 #4. Logit model without segmentation
 
+Q1
+install.packages("gmnl")
+library(gmnl)
+
+kiwi <- read.csv("kiwi_bubbles_data.csv")
+
+# Drop rows with out-of-stock events
+kiwi <- kiwi[!kiwi$price.MB == 99, ]
+
+# Convert data to mlogit format
+mlogitdata <- mlogit.data(kiwi, id = "id", varying = 4:7, choice = "choice", shape = "wide")
+
+# Run MLE
+mle <- gmnl(choice ~ price, data = mlogitdata)
+
+# Summary of the estimated model
+summary(mle)
+
+Q2
+
 #5. Logit model with segmentation
 
 #clustering customers into 10 groups and I will try different centers
