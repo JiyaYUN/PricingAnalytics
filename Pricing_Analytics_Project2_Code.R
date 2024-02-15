@@ -7,7 +7,7 @@ kiwi <- read.csv("kiwi_bubbles_P2.csv")
 
 #4. Logit model without segmentation
 
-Q1
+#Q1
 install.packages("gmnl")
 library(gmnl)
 
@@ -25,7 +25,7 @@ mle <- gmnl(choice ~ price, data = mlogitdata)
 # Summary of the estimated model
 summary(mle)
 
-Q2
+#Q2
 # Function to calculate demand probability
 demand <- function(price_KB, price_KR, price_MB, beta0_KB, beta0_KR, beta0_MB, beta1) {
     prob_KB <- exp(beta0_KB + beta1 * price_KB) /
@@ -86,7 +86,61 @@ cross_elasticities<- data.frame(
     )
 )
 
+#Q3
 
+install.packages("plotly")
+library(plotly)
+
+# Demand function incorporating KB, KR, and a fixed price for MB
+demand <- function(priceKB, priceKR, priceMB_fixed, para) {
+  numKB = exp(para[1] + para[3] * priceKB)
+  numKR = exp(para[2] + para[3] * priceKR)
+  numMB = exp(para[4] + para[3] * priceMB_fixed)
+  denom = 1 + numKB + numKR + numMB
+  probKB = numKB / denom
+  probKR = numKR / denom
+  return(c(probKB = probKB, probKR = probKR))
+}
+
+# Profit function for KB and KR, considering their prices and the fixed price of MB
+profit <- function(priceKB, priceKR, priceMB_fixed, para) {
+  unit_cost = 0.5
+  market_size = 1000
+  demands = demand(priceKB, priceKR, priceMB_fixed, para)
+  profitKB = (priceKB - unit_cost) * demands['probKB'] * market_size
+  profitKR = (priceKR - unit_cost) * demands['probKR'] * market_size
+  return(profitKB + profitKR)
+}
+
+# Parameters including intercepts for KB, KR, price sensitivity, and intercept for MB
+para = c(4.25316, 4.36240, -3.73793, 4.20440) # Adjust these based on your model's output
+price_MB_fixed = 1.43
+
+# Define a range of prices to examine for KB and KR
+aux = seq(0.5, 3, by = 0.01)
+pricespace = expand.grid(KB_Price = aux, KR_Price = aux)
+
+# Compute profit for each combination of KB and KR prices
+profitmat = numeric(nrow(pricespace))
+for (i in 1:nrow(pricespace)) {
+  profitmat[i] = profit(pricespace[i, "KB_Price"], pricespace[i, "KR_Price"], price_MB_fixed, para)
+}
+
+# Find the combination of prices that maximizes profit
+max_profit_index = which.max(profitmat)
+optimal_price_KB = pricespace[max_profit_index, "KB_Price"]
+optimal_price_KR = pricespace[max_profit_index, "KR_Price"]
+max_profit = max(profitmat)
+
+
+# Visualize the results with a 3D scatter plot
+p <- plot_ly(x = pricespace[,1], y = pricespace[,2], z = as.numeric(profitmat), type = "scatter3d", mode = "markers",
+             marker = list(color = as.numeric(profitmat), colorscale = c('#FFE1A1', '#683531'), showscale = TRUE)) %>%
+  layout(scene = list(xaxis = list(title = "P^KB"), yaxis = list(autorange = "reversed", title = "P^KR"), zaxis = list(title = "Profit"))) %>%
+  config(mathjax = 'cdn')
+
+# Display the plot
+p
 
 
 
