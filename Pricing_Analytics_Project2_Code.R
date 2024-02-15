@@ -110,6 +110,22 @@ cross_elasticities<- data.frame(
     )
 )
 
+# Interpretation
+#The own-price elasticities for Kiwi Bubbles (KB), Kiwi Regular (KR), and Mango Bubbles (MB) are all greater than 4, 
+#indicating that each product is quite price-sensitive. 
+#This suggests that a small percentage increase in the price of any of these products 
+#could lead to a larger percentage decrease in the quantity demanded.
+#The cross-price elasticities between the products are all positive and close to 1. 
+#This indicates that the products are substitutes for each other; 
+#an increase in the price of one product will lead to an increase in the demand for the other products.
+#These patterns are reasonable within the context of consumer products like soft drinks, 
+#which are often considered to be fairly elastic goods. 
+#The cross-price elasticity data indicates that KR has the highest elasticity in relation to MB and KB, 
+#suggesting that consumers have a preference for bubbles drinks over regular ones. 
+#Conversely, the lowest cross elasticity of KB to KR and MB implies that consumers 
+#have a stronger preference for KB over the other two drinks.
+
+
 #Q3
 
 install.packages("plotly")
