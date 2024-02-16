@@ -7,6 +7,8 @@ library(mlogit)
 #Q4.1
 kiwi <- read.csv("kiwi_bubbles_P2.csv")
 # Drop rows with out-of-stock events
+kiwi <- kiwi[!kiwi$price.KB == 99, ]
+kiwi <- kiwi[!kiwi$price.KR == 99, ]
 kiwi <- kiwi[!kiwi$price.MB == 99, ]
 
 # Convert data to mlogit format
@@ -153,12 +155,12 @@ plot_ly(x = pricespace[,1], y = pricespace[,2], z = as.numeric(profitmat), type 
      config(mathjax = 'cdn')
 
 #5. Logit model with segmentation
-library(gmnl)
-library(mlogit)
-library("data.table")
-library("Rfast")
 demo <- fread("demo_P2.csv",stringsAsFactors = F)
-#Q5.1
+
+################
+#Q5.1###########
+################
+
 #clustering customers into 8 groups
 demo_cluster = kmeans(x=demo[, 2:18], centers = 8, nstart = 1500)
 
@@ -168,17 +170,16 @@ cluster_id$cluster = demo_cluster$cluster
 kiwi = merge(kiwi, cluster_id, by = "id", all.x = TRUE)
 
 kiwi$cluster[is.na(kiwi$cluster)] = 9 #check N/A in cluster
-
-#Q5.2
+?table
 #check the share and number of every segment
 N = 359
-seg.share = c( table(demo_cluster$cluster),N - sum(table(demo_cluster$cluster))) / N
+seg.share = c( table(demo_cluster$cluster), N - sum(table(demo_cluster$cluster))) / N
 
 #create a dataframe to store coeffcient
 coef.est = data.frame(segment = 1:8, intercept.KB = NA, intercept.KR = NA, 
                       intercept.MB = NA, price.coef = NA) 
 
-#building multi logit model
+#building multi logit model and put coefficient in coef.est
 for (seg in 1:8) {
      kiwi.sub = subset(kiwi, cluster == seg)
      mlogitdata = mlogit.data(kiwi.sub,id="id",varying=4:7,choice="choice",shape="wide")
@@ -186,6 +187,11 @@ for (seg in 1:8) {
      coef.est[seg, 2:5] = mle$coefficients
 }
 
+#################
+#Q5.2############
+#################
+
+#build demand function for KR, KR and MB
 demandKB <- function(priceKB, priceKR, priceMB, para) {
      prob = exp(para[1] + para[4] * priceKB) /
           (1 + exp(para[1] + para[4] * priceKB) + exp(para[2] + para[4] * priceKR) +
@@ -266,7 +272,7 @@ kiwiPriceDF$sum_productMB <- as.numeric(kiwiPriceDF$sum_productMB)
 
 elasticity_k_KB <- -mean_price_KB / aggrprobKB * sum(kiwiPriceDF$sum_productKB)
 elasticity_k_KR <- -mean_price_KR / aggrprobKR * sum(kiwiPriceDF$sum_productKR)
-elasticity_k_KB <- -mean_price_MB / aggrprobMB * sum(kiwiPriceDF$sum_productMB)
+elasticity_k_MB <- -mean_price_MB / aggrprobMB * sum(kiwiPriceDF$sum_productMB)
 
 for (i in 1:8){
      kiwiPriceDF$sum_productKBKR[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKB[i] * kiwiPriceDF$probKR[i]
@@ -282,25 +288,33 @@ cross_elas_k_KBKR <- -mean_price_KR / aggrprobKB * sum(kiwiPriceDF$sum_productKB
 cross_elas_k_KBMB <- -mean_price_KB / aggrprobKB * sum(kiwiPriceDF$sum_productKBMB)
 cross_elas_k_KRMB <- -mean_price_KR / aggrprobKR * sum(kiwiPriceDF$sum_productKRMB)
 
-#Q5.4
-#donot lanching KB
+##############
+#Q5.4#########
+##############
+#donot launching KB
 uc=0.5
-pricespace <- seq(from = 3, to = 10, by = 0.1) #什么有病的题
+pricespace <- seq(from = 0.8, to = 5, by = 0.1) 
 total_profitswithoutKB <- numeric(length(pricespace))
+demandKRwithoutKB <- function(priceKR, priceMB, para) {
+     prob = exp(para[2] + para[4] * priceKR) /
+          (1 + exp(para[2] + para[4] * priceKR) +
+                exp(para[3] + para[4] * priceMB))
+     return(prob)
+}
 for (price_index in 1:length(pricespace)) {
      price <- pricespace[price_index]
      total_profit_at_price <- 0
      for (i in 1:8) {
           para <- coef.est[i, 2:5]
-          demand_KR <- demandKR(price, mean(kiwi$price.KR), price_MB_fixed, para)
+          demand_KR <- demandKRwithoutKB(price, 1.43, para)
           profit_at_price <- 1000 * seg.share[i] * demand_KR * (price - uc)
           total_profit_at_price <- total_profit_at_price + profit_at_price
      }
      total_profitswithoutKB[price_index] <- total_profit_at_price
 }
 optimal_price_index <- which.max(total_profitswithoutKB)
-optimal_pricewithoutKB <- pricespace[optimal_price_index]
-optimal_profitwithoutKB <- total_profitswithoutKB[optimal_price_index]
+optimal_KR_pricewithoutKB <- pricespace[optimal_price_index]
+optimal_KR_profitwithoutKB <- total_profitswithoutKB[optimal_price_index]
 
 #launching KB
 # Assuming pricespace_KB is defined similarly to pricespace for KR
@@ -319,8 +333,8 @@ for (KR_index in 1:length(pricespace)) {
           
           for (i in 1:8) {
                para <- coef.est[i, 2:5]
-               demand_KR <- demandKR(KR_price, mean(kiwi$price.KR), price_MB_fixed, para)
-               demand_KB <- demandKB(KB_price, mean(kiwi$price.KR), price_MB_fixed, para)
+               demand_KR <- demandKR(KB_price, KR_price, 1.43, para)
+               demand_KB <- demandKB(KB_price, KR_price, 1.43, para)
                profit_KR <- 1000 * seg.share[i] * demand_KR * (KR_price - uc)
                profit_KB <- 1000 * seg.share[i] * demand_KB * (KB_price - uc)
                total_profit <- total_profit + profit_KR + profit_KB
@@ -336,4 +350,5 @@ for (KR_index in 1:length(pricespace)) {
 optimal_combination <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
 optimal_KR_price <- optimal_combination$KR_Price
 optimal_KB_price <- optimal_combination$KB_Price
+
 #6. Understanding strategic responses
