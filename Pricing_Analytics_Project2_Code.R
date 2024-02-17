@@ -4,6 +4,7 @@ setwd("D:/Simon.UR/Spring A/MKT440 Pricing Analytics/")
 #4. Logit model without segmentation
 library(gmnl)
 library(mlogit)
+library(data.table)
 #Q4.1
 kiwi <- read.csv("kiwi_bubbles_P2.csv")
 # Drop rows with out-of-stock events
@@ -316,6 +317,13 @@ optimal_price_index <- which.max(total_profitswithoutKB)
 optimal_KR_pricewithoutKB <- pricespace[optimal_price_index]
 optimal_KR_profitwithoutKB <- total_profitswithoutKB[optimal_price_index]
 
+demandMBwithoutKB <- function(priceKR, priceMB, para) {
+     prob = exp(para[2] + para[4] * priceKR) /
+          (1 + exp(para[2] + para[4] * priceKR) +
+                exp(para[3] + para[4] * priceMB))
+     return(prob)
+}
+     
 total_profit_MB <- 0
 for (i in 1:8) {
      para <- coef.est[i, 2:5]
