@@ -143,6 +143,7 @@ plot_ly(x = pricespace[,1], y = pricespace[,2], z = as.numeric(profitmat), type 
      layout(scene = list(xaxis = list(title = "P^KB"), yaxis = list(autorange = "reversed", title = "P^KR"), zaxis = list(title = "Profit"))) %>%
      config(mathjax = 'cdn')
 
+
 #5. Logit model with segmentation
 demo <- fread("demo_P2.csv",stringsAsFactors = F)
 
@@ -159,7 +160,7 @@ cluster_id$cluster = demo_cluster$cluster
 kiwi = merge(kiwi, cluster_id, by = "id", all.x = TRUE)
 
 kiwi$cluster[is.na(kiwi$cluster)] = 9 #check N/A in cluster
-?table
+head(kiwi)
 #check the share and number of every segment
 N = 359
 seg.share = c( table(demo_cluster$cluster), N - sum(table(demo_cluster$cluster))) / N
@@ -231,6 +232,7 @@ for (i in 1:8) {
      kiwiPriceDF$probKR[i] <- prob_KR
      kiwiPriceDF$probMB[i] <- prob_MB
 }
+
 kiwiPriceDF$probKB <- as.numeric(kiwiPriceDF$probKB)
 kiwiPriceDF$probKR <- as.numeric(kiwiPriceDF$probKR)
 kiwiPriceDF$probMB <- as.numeric(kiwiPriceDF$probMB)
@@ -240,20 +242,20 @@ kiwiPriceDF$aggrprobKR <- NA
 kiwiPriceDF$aggrprobMB <- NA
 
 for (i in 1:8) {
-     kiwiPriceDF$aggrprobKB[i] <- 1000 * seg.share[i] * kiwiPriceDF$probKB[i]
-     kiwiPriceDF$aggrprobKR[i] <- 1000 * seg.share[i] * kiwiPriceDF$probKR[i]
-     kiwiPriceDF$aggrprobMB[i] <- 1000 * seg.share[i] * kiwiPriceDF$probMB[i]
+     kiwiPriceDF$aggrprobKB[i] <- seg.share[i] * kiwiPriceDF$probKB[i]
+     kiwiPriceDF$aggrprobKR[i] <- seg.share[i] * kiwiPriceDF$probKR[i]
+     kiwiPriceDF$aggrprobMB[i] <- seg.share[i] * kiwiPriceDF$probMB[i]
 }
 aggrprobKB = sum(kiwiPriceDF$aggrprobKB)
 aggrprobKR = sum(kiwiPriceDF$aggrprobKR)
 aggrprobMB = sum(kiwiPriceDF$aggrprobMB)
 
 for (i in 1:8){
+     para <- coef.est[i,2:5]
      kiwiPriceDF$sum_productKB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKB[i] * (1 - kiwiPriceDF$probKB[i])
      kiwiPriceDF$sum_productKR[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKR[i] * (1 - kiwiPriceDF$probKR[i])
      kiwiPriceDF$sum_productMB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probMB[i] * (1 - kiwiPriceDF$probMB[i])
 }
-
 
 kiwiPriceDF$sum_productKB <- as.numeric(kiwiPriceDF$sum_productKB)
 kiwiPriceDF$sum_productKR <- as.numeric(kiwiPriceDF$sum_productKR)
@@ -267,15 +269,24 @@ for (i in 1:8){
      kiwiPriceDF$sum_productKBKR[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKB[i] * kiwiPriceDF$probKR[i]
      kiwiPriceDF$sum_productKBMB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKB[i] * kiwiPriceDF$probMB[i]
      kiwiPriceDF$sum_productKRMB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKR[i] * kiwiPriceDF$probMB[i]
+     kiwiPriceDF$sum_productKRKB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probKB[i] * kiwiPriceDF$probKR[i]
+     kiwiPriceDF$sum_productMBKB[i] <- seg.share[i] * para[4] * kiwiPriceDF$probMB[i] * kiwiPriceDF$probKB[i]
+     kiwiPriceDF$sum_productMBKR[i] <- seg.share[i] * para[4] * kiwiPriceDF$probMB[i] * kiwiPriceDF$probKR[i]
 }
 
 kiwiPriceDF$sum_productKBKR <- as.numeric(kiwiPriceDF$sum_productKBKR)
 kiwiPriceDF$sum_productKBMB <- as.numeric(kiwiPriceDF$sum_productKBMB)
 kiwiPriceDF$sum_productKRMB <- as.numeric(kiwiPriceDF$sum_productKRMB)
+kiwiPriceDF$sum_productKRKB <- as.numeric(kiwiPriceDF$sum_productKRKB)
+kiwiPriceDF$sum_productMBKB <- as.numeric(kiwiPriceDF$sum_productMBKB)
+kiwiPriceDF$sum_productMBKR <- as.numeric(kiwiPriceDF$sum_productMBKR)
 
 cross_elas_k_KBKR <- -mean_price_KR / aggrprobKB * sum(kiwiPriceDF$sum_productKBKR)
-cross_elas_k_KBMB <- -mean_price_KB / aggrprobKB * sum(kiwiPriceDF$sum_productKBMB)
-cross_elas_k_KRMB <- -mean_price_KR / aggrprobKR * sum(kiwiPriceDF$sum_productKRMB)
+cross_elas_k_KBMB <- -mean_price_KB / aggrprobMB * sum(kiwiPriceDF$sum_productKBMB)
+cross_elas_k_KRMB <- -mean_price_KR / aggrprobMB * sum(kiwiPriceDF$sum_productKRMB)
+cross_elas_k_KRKB <- -mean_price_KR / aggrprobKB * sum(kiwiPriceDF$sum_productKRKB)
+cross_elas_k_MBKB <- -mean_price_MB / aggrprobKB * sum(kiwiPriceDF$sum_productMBKB)
+cross_elas_k_MBKR <- -mean_price_MB / aggrprobKR * sum(kiwiPriceDF$sum_productMBKR)
 
 ##############
 #Q5.4#########
@@ -304,6 +315,15 @@ for (price_index in 1:length(pricespace)) {
 optimal_price_index <- which.max(total_profitswithoutKB)
 optimal_KR_pricewithoutKB <- pricespace[optimal_price_index]
 optimal_KR_profitwithoutKB <- total_profitswithoutKB[optimal_price_index]
+
+total_profit_MB <- 0
+for (i in 1:8) {
+     para <- coef.est[i, 2:5]
+     demand_MB <- demandMBwithoutKB(1.1, 1.43, para) 
+     profit_MB <- 1000 * seg.share[i] * demand_MB * (1.43 - uc)
+     total_profit_MB <- total_profit_MB + profit_MB 
+}
+total_profit_MB
 
 #launching KB
 # Assuming pricespace_KB is defined similarly to pricespace for KR
@@ -339,6 +359,7 @@ for (KR_index in 1:length(pricespace)) {
 optimal_combination <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
 optimal_KR_price <- optimal_combination$KR_Price
 optimal_KB_price <- optimal_combination$KB_Price
+
 
 #6. Understanding strategic responses
 #1. First, solve Mango’s optimal pricing problem, given that Kiwi’s price is the one you set from the previous section. What is the new price of MB?
