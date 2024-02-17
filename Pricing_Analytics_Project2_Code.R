@@ -117,7 +117,7 @@ profit <- function(priceKB, priceKR, priceMB_fixed, para) {
 }
 
 # Parameters including intercepts for KB, KR, price sensitivity, and intercept for MB
-para = c(4.25316, 4.36240, -3.73793, 4.20440) # Adjust these based on your model's output
+para = c(4.25316, 4.36240, -3.73793, 4.20440)
 price_MB_fixed = 1.43
 
 # Define a range of prices to examine for KB and KR
@@ -133,7 +133,7 @@ for (i in 1:nrow(pricespace)) {
 # Find the combination of prices that maximizes profit
 max_profit_index = which.max(profitmat)
 optimal_price_KB = pricespace[max_profit_index, "KB_Price"] 
-optimal_price_KR = pricespace[max_profit_index, "KR_Price"] #查一下这里
+optimal_price_KR = pricespace[max_profit_index, "KR_Price"] 
 max_profit = max(profitmat)
 
 
