@@ -25,17 +25,6 @@ summary(mle)
 # We observe almost identical baseline popularity for all three products, 
 # meaning all products are selected roughly at the same rate. It's because we are assuming homogeneous demand.
 
-# KB as an example:
-# The coefficient 4.25316 for the KB (intercept) in the logit model is a log-odds ratio. 
-# To interpret its magnitude in a more intuitive way,we need to convert log-odds to odds, and then to probabilities
-# The odds of choosing KB over not buying anything, when all other factors are held constant, are approximately 70.33 to 1.
-# This means that the likelihood of a consumer choosing KB is 70.33 times higher than the likelihood of them not buying anything.
-# The probability of a consumer choosing the product KB over the base category is approximately 98.6%. This suggests that, in the 
-# absence of any other influences, there is a very high baseline probability that a consumer will choose KB compared to not purchasing at all 
-#this applies to all other products. The probabilities of a consumer choosing one of the three products are all very high (over 95%).
-#These high probabilities are relative to the base category which is the choice of not purchasing, the model suggests that once the 
-# decision to purchase is made, there is a high probability that the purchase will be one of the three products.
-
 # price:
 # The coefficient for price is -3.73793, which is statistically significant (p < 0.001). This indicates that, across all products, 
 # as the price increases, the log odds of choosing any given product decreases. In simpler terms, higher prices are associated with a 
