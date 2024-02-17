@@ -407,6 +407,7 @@ for (KR_index in 1:length(pricespace)) {
 optimal_combination0 <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
 optimal_KR_price0 <- optimal_combination$KR_Price
 optimal_KB_price0 <- optimal_combination$KB_Price
+#The KR_Price is 1.09, KB_Price is 1,Total Profit is 212.5706.
 
 #3.Repeat the previous two steps iteratively, until neither Kiwi nor Mango has an incentive to set a different price 
 #The first time
