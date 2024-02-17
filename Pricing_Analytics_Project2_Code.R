@@ -369,7 +369,6 @@ pricespace_KB <- seq(0.8, 2.5, by = 0.1)
 # Initialize a matrix or dataframe to store profits for each price combination
 profit_matrix <- expand.grid(KR_Price = pricespace, KB_Price = pricespace_KB)
 profit_matrix$Total_Profit <- 0
-
 # Nested loops to iterate over price combinations
 for (KR_index in 1:length(pricespace)) {
     for (KB_index in 1:length(pricespace_KB)) {
@@ -394,17 +393,15 @@ for (KR_index in 1:length(pricespace)) {
 
 # Find the optimal price combination
 optimal_combination0 <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
-optimal_KR_price0 <- optimal_combination$KR_Price
-optimal_KB_price0 <- optimal_combination$KB_Price
+optimal_KR_price0 <- optimal_combination0$KR_Price
+optimal_KB_price0 <- optimal_combination0$KB_Price
 #The KR_Price is 1.09, KB_Price is 1,Total Profit is 212.5706.
 
 #3.Repeat the previous two steps iteratively, until neither Kiwi nor Mango has an incentive to set a different price 
 #The first time
 pricespace_MB <- seq(0.8, 2.5, by = 0.1)
-uc=0.5
 pricespace <- seq(from = 0.8, to = 5, by = 0.01) 
 total_profits <- numeric(length(pricespace))
-
 for (price_index in 1:length(pricespace)) {
     price <- pricespace[price_index]
     total_profit_at_price <- 0
@@ -419,7 +416,7 @@ for (price_index in 1:length(pricespace)) {
 optimal_price_index <- which.max(total_profits)
 optimal_MB_price1 <- pricespace[optimal_price_index]
 optimal_MB_profit1 <- total_profits[optimal_price_index]
-#The first time: Opt price for MB is 0.92
+#The first time: Opt price for MB is 0.92,the profit is 116.8767
 
 # Initialize a matrix or dataframe to store profits for each price combination
 pricespace_KB <- seq(0.8, 2.5, by = 0.1)
@@ -450,9 +447,9 @@ for (KR_index in 1:length(pricespace)) {
 
 # Find the optimal price combination
 optimal_combination1 <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
-optimal_KR_price1 <- optimal_combination$KR_Price
-optimal_KB_price1 <- optimal_combination$KB_Price
-#The first time KR_Price is 1.08, KB_Price is 1 Total_Profit is 202.0056
+optimal_KR_price1 <- optimal_combination1$KR_Price
+optimal_KB_price1 <- optimal_combination1$KB_Price
+#The first time KR_Price is 1.08, KB_Price is 1, Total_Profit is 202.0056
 
 #The second time
 pricespace_MB <- seq(0.8, 2.5, by = 0.01)
@@ -504,8 +501,8 @@ for (KR_index in 1:length(pricespace)) {
 
 # Find the optimal price combination
 optimal_combination2 <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
-optimal_KR_price2 <- optimal_combination$KR_Price
-optimal_KB_price2 <- optimal_combination$KB_Price
+optimal_KR_price2 <- optimal_combination2$KR_Price
+optimal_KB_price2 <- optimal_combination2$KB_Price
 #The Second time KR_Price is 1.08, KB_Price is 0.99 Total_Profit is 202.0099.
 
 #The Third time
@@ -529,7 +526,6 @@ optimal_price_index <- which.max(total_profits)
 optimal_MB_price3 <- pricespace[optimal_price_index]
 optimal_MB_profit3 <- total_profits[optimal_price_index]
 #The Third time: Opt price for MB is still 0.92, profit is 115.6046.
-
 pricespace_KB <- seq(0.9, 1.1, by = 0.01)
 profit_matrix <- expand.grid(KR_Price = pricespace, KB_Price = pricespace_KB)
 profit_matrix$Total_Profit <- 0
@@ -558,17 +554,13 @@ for (KR_index in 1:length(pricespace)) {
 
 # Find the optimal price combination
 optimal_combination3 <- profit_matrix[which.max(profit_matrix$Total_Profit), ]
-optimal_KR_price3 <- optimal_combination$KR_Price
-optimal_KB_price3 <- optimal_combination$KB_Price
+optimal_KR_price3 <- optimal_combination3$KR_Price
+optimal_KB_price3 <- optimal_combination3$KB_Price
 #The Third time KR_Price is 1.08, KB_Price is 0.99, Total_Profit is 202.0099.
 #Now neither Kiwi nor Mango has an incentive to set a different price (you can be as accurate as one cent, but no need to be more accurate than that). 
 #These prices are the new “equilibrium price”. 
 #The KB price is 0.99,The KR price is 1.08.Total_Profit for Kiwi is 202.0099.
 #The MB price is 0.92,profit for Mango is 115.6046.
-
-
-
-
 
 
 
