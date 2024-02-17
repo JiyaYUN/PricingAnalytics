@@ -355,9 +355,6 @@ optimal_KB_price <- optimal_combination$KB_Price
 #1. First, solve Mango’s optimal pricing problem, given that Kiwi’s price is the one you set from the previous section. What is the new price of MB?
 # Assuming pricespace_MB is defined similarly to pricespace for KR
 pricespace_MB <- seq(0.8, 2.5, by = 0.1)
-
-#donot launching KR
-uc=0.5
 pricespace <- seq(from = 0.8, to = 5, by = 0.01) 
 total_profits <- numeric(length(pricespace))
 
@@ -375,6 +372,7 @@ for (price_index in 1:length(pricespace)) {
 optimal_price_index <- which.max(total_profits)
 optimal_MB_price0 <- pricespace[optimal_price_index]
 optimal_MB_profit0 <- total_profits[optimal_price_index]
+#The optimal_MB_price0 is 0.96,and the profit is 139.5803.
 
 #2.Set prices for KR and KB to respond to the new price of Mango Bubble
 # Assuming pricespace_KB is defined similarly to pricespace for KR
