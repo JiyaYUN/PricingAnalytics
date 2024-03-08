@@ -1,0 +1,25 @@
+n_clusters = 4
+
+# Perform KMeans clustering with chosen number of clusters
+kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+clusters = kmeans.fit_predict(scaled_features)
+
+# Add the cluster labels to the original data
+clustering_data['Cluster'] = clusters
+
+# Recalculate the summary statistics for each cluster to provide insights
+cluster_summary = clustering_data.groupby('Cluster').agg({
+    'AverageDailyRate': ['mean', 'std', 'min', 'max'],
+    'RevenueLoss': ['mean', 'std', 'min', 'max', 'count']
+}).reset_index()
+
+# Visualize the clustering results
+plt.figure(figsize=(12, 6))
+plt.scatter(clustering_data['AverageDailyRate'], clustering_data['RevenueLoss'], c=clustering_data['Cluster'], cmap='viridis', alpha=0.5)
+plt.title('Clustering of Cancellations by Average Daily Rate and Revenue Loss')
+plt.xlabel('Average Daily Rate')
+plt.ylabel('Revenue Loss')
+plt.colorbar(label='Cluster')
+plt.show()
+
+cluster_summary
